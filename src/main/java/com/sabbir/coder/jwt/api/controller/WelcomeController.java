@@ -2,7 +2,9 @@ package com.sabbir.coder.jwt.api.controller;
 
 import com.sabbir.coder.jwt.api.entity.AuthRequest;
 import com.sabbir.coder.jwt.api.utils.JwtUtil;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.Getter;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,13 +14,18 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class WelcomeController {
-  @Autowired private JwtUtil jwtUtil;
+  private final JwtUtil jwtUtil;
 
-  @Autowired private AuthenticationManager authenticationManager;
+  private final AuthenticationManager authenticationManager;
+
+  public WelcomeController(JwtUtil jwtUtil, AuthenticationManager authenticationManager) {
+    this.jwtUtil = jwtUtil;
+    this.authenticationManager = authenticationManager;
+  }
 
   @GetMapping("/welcome")
   public WelcomeResponse welcome() {
-    return new WelcomeResponse();
+    return new WelcomeResponse("Welcome to spring security jwt");
   }
 
   @PostMapping("/authenticate")
@@ -33,24 +40,17 @@ public class WelcomeController {
     return new AuthResponse(jwtUtil.generateToken(authRequest.getUsername()));
   }
 
-  private class WelcomeResponse {
-
-    private final String welcomeMessage = "Welcome to spring security jwt";
-
-    public String getWelcomeMessage() {
-      return welcomeMessage;
-    }
+  @Data
+  @AllArgsConstructor
+  @Getter
+  private static class WelcomeResponse {
+    private final String welcomeMessage;
   }
 
-  private class AuthResponse {
+  @Data
+  @Getter
+  @AllArgsConstructor
+  private static class AuthResponse {
     private final String authToken;
-
-    public AuthResponse(String authToken) {
-      this.authToken = authToken;
-    }
-
-    public String getAuthToken() {
-      return authToken;
-    }
   }
 }
